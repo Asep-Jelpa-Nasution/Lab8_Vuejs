@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>✨ Manajemen Artikel Modern</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Vue 3 & Axios -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  </head>
+  <body class="bg-gray-50 text-gray-800 font-sans">
+    <div id="app" class="max-w-6xl mx-auto px-4 py-10">
+      <!-- Header -->
+      <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-indigo-700 flex items-center gap-2">
+          📚 Manajemen Artikel
+        </h1>
+        <button
+          @click="tambah"
+          class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-md shadow transition"
+        >
+          + Tambah
+        </button>
+      </div>
+
+      <!-- Table -->
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <table class="min-w-full text-sm">
+          <thead class="bg-indigo-100 text-indigo-800">
+            <tr>
+              <th class="px-4 py-3 text-left">ID</th>
+              <th class="px-4 py-3 text-left">Judul</th>
+              <th class="px-4 py-3 text-left">Status</th>
+              <th class="px-4 py-3 text-center">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="(row, index) in artikel"
+              :key="row.id"
+              class="border-t hover:bg-gray-50"
+            >
+              <td class="px-4 py-3">{{ row.id }}</td>
+              <td class="px-4 py-3">{{ row.judul }}</td>
+              <td class="px-4 py-3">
+                <span
+                  :class="row.status == 1 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-700'"
+                  class="text-xs px-2 py-1 rounded-md font-semibold"
+                >
+                  {{ statusText(row.status) }}
+                </span>
+              </td>
+              <td class="px-4 py-3 text-center space-x-2">
+                <button
+                  @click="edit(row)"
+                  class="px-3 py-1 rounded-md text-sm font-medium border border-yellow-300 bg-yellow-100 text-yellow-800 hover:bg-yellow-200 transition"
+                >
+                  Edit
+                </button>
+                <button
+                  @click="hapus(index, row.id)"
+                  class="px-3 py-1 rounded-md text-sm font-medium border border-red-300 bg-red-100 text-red-800 hover:bg-red-200 transition"
+                >
+                  Hapus
+                </button>
+              </td>
+            </tr>
+            <tr v-if="artikel.length === 0">
+              <td colspan="4" class="text-center text-gray-400 py-6">
+                Tidak ada artikel.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Modal -->
+      <div
+        v-if="showForm"
+        class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50"
+      >
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-lg p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-bold text-indigo-700">{{ formTitle }}</h2>
+            <button
+              @click="showForm = false"
+              class="text-gray-400 hover:text-gray-700 text-2xl"
+            >
+              &times;
+            </button>
+          </div>
+          <form @submit.prevent="saveData" class="space-y-4">
+            <input
+              type="text"
+              v-model="formData.judul"
+              placeholder="Judul Artikel"
+              class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              required
+            />
+            <textarea
+              v-model="formData.isi"
+              rows="4"
+              placeholder="Isi Artikel"
+              class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            ></textarea>
+            <select
+              v-model="formData.status"
+              class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            >
+              <option v-for="opt in statusOptions" :value="opt.value">
+                {{ opt.text }}
+              </option>
+            </select>
+            <select
+              v-model="formData.id_kategori"
+              class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              required
+            >
+              <option disabled value="">-- Pilih Kategori --</option>
+              <option v-for="kat in kategoriList" :value="kat.id_kategori">
+                {{ kat.nama_kategori }}
+              </option>
+            </select>
+            <div class="text-end">
+              <button
+                type="submit"
+                class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md"
+              >
+                Simpan
+              </button>
+              <button
+                type="button"
+                @click="showForm = false"
+                class="ml-2 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-100"
+              >
+                Batal
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vue Script -->
+    <script>
+      const { createApp } = Vue;
+      createApp({
+        data() {
+          return {
+            artikel: [],
+            kategoriList: [],
+            showForm: false,
+            formTitle: "Tambah Artikel",
+            formData: {
+              id: null,
+              judul: "",
+              isi: "",
+              status: 0,
+              id_kategori: "",
+            },
+            statusOptions: [
+              { text: "Draft", value: 0 },
+              { text: "Published", value: 1 },
+            ],
+          };
+        },
+        mounted() {
+          this.loadData();
+          this.loadKategori();
+        },
+        methods: {
+          loadData() {
+            axios
+              .get("http://localhost:8080/post")
+              .then((res) => (this.artikel = res.data))
+              .catch(() => alert("Gagal load artikel"));
+          },
+          loadKategori() {
+            axios
+              .get("http://localhost:8080/kategori")
+              .then((res) => (this.kategoriList = res.data))
+              .catch(() => alert("Gagal load kategori"));
+          },
+          statusText(status) {
+            return status == 0 ? "Draft" : "Published";
+          },
+          tambah() {
+            this.formTitle = "Tambah Artikel";
+            this.formData = {
+              id: null,
+              judul: "",
+              isi: "",
+              status: 0,
+              id_kategori: "",
+            };
+            this.showForm = true;
+          },
+          edit(row) {
+            this.formTitle = "Edit Artikel";
+            this.formData = {
+              id: row.id,
+              judul: row.judul,
+              isi: row.isi,
+              status: row.status,
+              id_kategori: row.id_kategori || "",
+            };
+            this.showForm = true;
+          },
+          hapus(index, id) {
+            if (confirm("Yakin hapus artikel ini?")) {
+              axios
+                .delete(`http://localhost:8080/post/${id}`)
+                .then(() => this.artikel.splice(index, 1))
+                .catch(() => alert("Gagal hapus artikel"));
+            }
+          },
+          saveData() {
+            const method = this.formData.id ? "put" : "post";
+            const url = this.formData.id
+              ? `http://localhost:8080/post/${this.formData.id}`
+              : "http://localhost:8080/post";
+
+            axios[method](url, this.formData)
+              .then(() => {
+                this.showForm = false;
+                this.loadData();
+              })
+              .catch(() => alert("Gagal simpan artikel"));
+          },
+        },
+      }).mount("#app");
+    </script>
+  </body>
+</html>
