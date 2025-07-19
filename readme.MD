@@ -125,11 +125,11 @@ createApp({
 
 ### Form Tambah Artikel
 
-![xampp](img/form-tambah.png)
+![xampp](img/form_tambah.png)
 
 ### Form Edit Artikel
 
-![xampp](img/form-edit.png)
+![xampp](img/form_edit.png)
 
 ### Hapus Artikel
 
