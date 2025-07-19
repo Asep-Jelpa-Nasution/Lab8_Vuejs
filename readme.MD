@@ -134,7 +134,7 @@ createApp({
 ### Hapus Artikel
 
 ![xampp](img/hapus.png)
-```
+
 
 ---
 
