@@ -205,8 +205,8 @@
               id: row.id,
               judul: row.judul,
               isi: row.isi,
-              status: row.status,
-              id_kategori: row.id_kategori || "",
+              status: typeof row.status === "number" ? row.status : 0,
+              id_kategori: row.id_kategori ?? "",
             };
             this.showForm = true;
           },
@@ -219,17 +219,26 @@
             }
           },
           saveData() {
-            const method = this.formData.id ? "put" : "post";
-            const url = this.formData.id
-              ? `http://localhost:8080/post/${this.formData.id}`
+            const { id, judul, isi, status, id_kategori } = this.formData;
+            const method = id ? "put" : "post";
+            const url = id
+              ? `http://localhost:8080/post/${id}`
               : "http://localhost:8080/post";
 
-            axios[method](url, this.formData)
+            const payload = { judul, isi, status, id_kategori };
+
+            axios[method](url, payload)
               .then(() => {
                 this.showForm = false;
                 this.loadData();
               })
-              .catch(() => alert("Gagal simpan artikel"));
+              .catch((err) => {
+                console.error(
+                  "Gagal simpan:",
+                  err.response?.data || err.message
+                );
+                alert("Gagal simpan artikel");
+              });
           },
         },
       }).mount("#app");
