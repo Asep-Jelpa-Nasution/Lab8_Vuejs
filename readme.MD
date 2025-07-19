@@ -1,16 +1,18 @@
 # 🧪 Praktikum 11: VueJS
 
 ## 👨‍🎓 Identitas
-- **Nama**: Asep Jelpa Nasution  
-- **NIM**: 312310023  
-- **Kelas**: TI.23.C1  
-- **Mata Kuliah**: Pemrograman Web 2  
-- **Dosen Pengampu**: Agung Nugroho, S.Kom., M.Kom  
-- **Universitas**: Universitas Pelita Bangsa  
+
+- **Nama**: Asep Jelpa Nasution
+- **NIM**: 312310023
+- **Kelas**: TI.23.C1
+- **Mata Kuliah**: Pemrograman Web 2
+- **Dosen Pengampu**: Agung Nugroho, S.Kom., M.Kom
+- **Universitas**: Universitas Pelita Bangsa
 
 ---
 
 ## 🎯 Tujuan Praktikum
+
 1. Memahami konsep dasar **API**.
 2. Memahami dasar penggunaan **Framework VueJS 3**.
 3. Mampu membuat **Frontend API** menggunakan VueJS secara manual (tanpa NPM).
@@ -34,6 +36,7 @@ lab11_vuejs/
 ## 🛠️ Langkah Praktikum
 
 ### 1. Setup Awal
+
 - Tambahkan library Vue 3 & Axios dari CDN pada `index.html`.
 
 ```html
@@ -50,32 +53,33 @@ lab11_vuejs/
 - Isi awal file `app.js`:
 
 ```js
-const { createApp } = Vue
-const apiUrl = 'http://localhost/labci4/public'
+const { createApp } = Vue;
+const apiUrl = "http://localhost/labci4/public";
 
 createApp({
   data() {
     return {
-      artikel: ''
-    }
+      artikel: "",
+    };
   },
   mounted() {
-    this.loadData()
+    this.loadData();
   },
   methods: {
     loadData() {
-      axios.get(apiUrl + '/post')
-        .then(response => {
-          this.artikel = response.data.artikel
+      axios
+        .get(apiUrl + "/post")
+        .then((response) => {
+          this.artikel = response.data.artikel;
         })
-        .catch(error => console.log(error))
+        .catch((error) => console.log(error));
     },
     statusText(status) {
-      if (!status) return ''
-      return status == 1 ? 'Publish' : 'Draft'
-    }
-  }
-}).mount('#app')
+      if (!status) return "";
+      return status == 1 ? "Publish" : "Draft";
+    },
+  },
+}).mount("#app");
 ```
 
 ---
@@ -110,30 +114,35 @@ createApp({
 ✅ Hapus artikel  
 ✅ Semua aksi menggunakan Vue 3 + Axios ke endpoint REST API CodeIgniter 4
 
-📸 **Screenshot Hasil**  
+📸 **Screenshot Hasil**
+
 > Tambahkan screenshot ke folder `img/` lalu panggil seperti ini:
 
 ```markdown
 ### Tampil Daftar Artikel
-![list](img/list.png)
+
+![xampp](img/list.png)
 
 ### Form Tambah Artikel
-![form](img/form-tambah.png)
+
+![xampp](img/form-tambah.png)
 
 ### Form Edit Artikel
-![edit](img/form-edit.png)
+
+![xampp](img/form-edit.png)
 
 ### Hapus Artikel
-![hapus](img/hapus.png)
+
+![xampp](img/hapus.png)
 ```
 
 ---
 
 ## 📦 Tools & Library
 
-- Vue 3 CDN  
-- Axios CDN  
-- Web Server: XAMPP / PHP built-in  
+- Vue 3 CDN
+- Axios CDN
+- Web Server: XAMPP / PHP built-in
 - Backend API: CodeIgniter 4
 
 ---
@@ -149,6 +158,7 @@ createApp({
 ---
 
 📁 **Contoh Path File**
+
 ```
 Lab11Web_VueJS/
 │
