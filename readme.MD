@@ -118,7 +118,7 @@ createApp({
 
 > Tambahkan screenshot ke folder `img/` lalu panggil seperti ini:
 
-```markdown
+
 ### Tampil Daftar Artikel
 
 ![xampp](img/list.png)
